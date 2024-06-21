@@ -1,27 +1,30 @@
-import { useState, useReducer } from "react";
+import { useReducer, useEffect } from "react";
 import "./App.scss";
 // import Header from "./components/header";
 import todoReducer from "./reducer";
+import TodoList from "./components/todos";
+import Createtodo from "./components/createtodo";
+import Header from "./components/header";
 
 export interface Todo {
   id: number;
   text: string;
   completed: boolean;
 }
-export const initialState = {
-  todos: [],
-  editingTodo: null,
-};
+
+export const initialTodoState: Todo[] = JSON.parse(
+  localStorage.getItem("todos") || "[]"
+);
 
 function App() {
-  const [state, dispatch] = useReducer(todoReducer, initialState);
-  const [newTodo, setNewTodo] = useState("");
+  const [todos, dispatch] = useReducer(todoReducer, initialTodoState);
+  // const [newTodo, setNewTodo] = useState("");
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
-  const handleAddTodo = () => {
-    if (newTodo.trim() !== "") {
-      dispatch({ type: "ADD_TODO", payload: newTodo });
-      setNewTodo("");
-    }
+  const handleAddTodo = (text: string) => {
+    dispatch({ type: "ADD_TODO", payload: text });
   };
 
   const handleToggleTodo = (id: number) => {
@@ -32,66 +35,49 @@ function App() {
     dispatch({ type: "DELETE_TODO", payload: id });
   };
 
-  const handleEditTodo = (todo: Todo) => {
-    dispatch({ type: "EDIT_TODO", payload: todo });
+  const handleEditTodo = (id: number, newText: string) => {
+    dispatch({
+      type: "EDIT_TODO",
+      payload: { id, text: newText, completed: false },
+    });
   };
 
-  const handleUpdateTodo = () => {
-    dispatch({ type: "UPDATE_TODO", payload: newTodo });
-    setNewTodo("");
-  };
+  // const handleUpdateTodo = () => {
+  //   dispatch({ type: "UPDATE_TODO", payload: newTodo });
+  //   setNewTodo("");
+  // };
 
-  const handleNewTodoChange = (e: any) => {
-    setNewTodo(e.target.value);
-  };
-
+  // const handleNewTodoChange = (e: any) => {
+  //   setNewTodo(e.target.value);
+  // };
+  const totalTodos = todos.length;
+  const completedTodos = todos.filter((todo) => todo.completed).length;
+  const uncompletedTodos = totalTodos - completedTodos;
+  
   return (
     <>
+    <div className="out">
       <div className="wrapper">
-        <div className="todo-list">
-          <div className="head">
-            <h1>TODO</h1>
-            <input
-              type="text"
-              value={newTodo}
-              onChange={handleNewTodoChange}
-              placeholder="Add a new todo"
-            />
-            <button className="btnadd" onClick={handleAddTodo}>Add Todo</button>
+        <div className="mytodo">
+          <Header />
+           <Createtodo onAddTodo={handleAddTodo} />
+        </div>
+        <div className="app">
+         
+          <TodoList
+            todos={todos}
+            handleToggleTodo={handleToggleTodo}
+            handleDeleteTodo={handleDeleteTodo}
+            handleEditTodo={handleEditTodo}
+          />
+          <div className="counters">
+            <p> {totalTodos} Items left</p>
+            <p>Completed {completedTodos}</p>
+            <p>Uncompleted {uncompletedTodos}</p>
           </div>
-       <div className="list">
-          {state.todos.map((todo) => (
-            <p
-              key={todo.id}
-              style={{
-                textDecoration: todo.completed ? "line-through" : "none",
-              }}
-            >
-              <input type="checkbox"
-              title="Mark as completed"
-                checked={todo.completed}
-                onChange={() => handleToggleTodo(todo.id)}>
-
-                </input>
-              {state.editingTodo?.id === todo.id ? (
-                <input    type="text"
-                value={newTodo}
-                onChange={handleNewTodoChange}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleUpdateTodo();
-                  }
-                }}></input>
-              ) : (
-                todo.text
-              )}
-              <button className="btnedit" onClick={() => handleEditTodo(todo)}>Edit</button>
-              <button className="btndelete"  onClick={() => handleDeleteTodo(todo.id)}>Delete</button>
-            </p>
-          ))}
         </div>
-        </div>
-      </div>
+            
+      </div></div>
     </>
   );
 }
