@@ -50,13 +50,14 @@ function App() {
       <div className="wrapper">
         <div className="todo-list">
           <div className="head">
+            <h1>TODO</h1>
             <input
               type="text"
               value={newTodo}
               onChange={handleNewTodoChange}
               placeholder="Add a new todo"
             />
-            <button onClick={handleAddTodo}>Add Todo</button>
+            <button className="btnadd" onClick={handleAddTodo}>Add Todo</button>
           </div>
        <div className="list">
           {state.todos.map((todo) => (
@@ -84,8 +85,8 @@ function App() {
               ) : (
                 todo.text
               )}
-              <button onClick={() => handleEditTodo(todo)}>Edit</button>
-              <button onClick={() => handleDeleteTodo(todo.id)}>Delete</button>
+              <button className="btnedit" onClick={() => handleEditTodo(todo)}>Edit</button>
+              <button className="btndelete"  onClick={() => handleDeleteTodo(todo.id)}>Delete</button>
             </p>
           ))}
         </div>
