@@ -1,0 +1,21 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+.wrapper{
+  background-image: url("./images/bg-desktop-dark.jpg");
+  height: 20em;
+  position: relative;
+  .todo-list{
+    margin-top: 5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+    position: absolute;
+    border: 2px solid red;
+  }
+}
